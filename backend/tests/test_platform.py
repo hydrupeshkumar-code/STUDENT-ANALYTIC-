@@ -84,6 +84,19 @@ def test_rubric_scoring_and_gradebook(client, world):
     r = client.put(f"/api/assessments/{att['id']}/scores", headers=F, json={"scores": [
         {"student_id": s1, "attended": 30}, {"student_id": s2, "attended": 20}]})
     assert r.status_code == 200
+    updated = client.put(f"/api/assessments/{att['id']}/scores", headers=F, json={"scores": [
+        {"student_id": s1, "attended": 32}]})
+    assert updated.status_code == 200
+    assert next(row for row in updated.json()["rows"] if row["student_id"] == s1)["attended"] == 32
+    zero = client.put(f"/api/assessments/{att['id']}/scores", headers=F, json={"scores": [
+        {"student_id": s1, "attended": 0}]})
+    assert zero.status_code == 200
+    assert next(row for row in zero.json()["rows"] if row["student_id"] == s1)["attended"] == 0
+    assert client.put(f"/api/assessments/{att['id']}/scores", headers=F, json={"scores": [
+        {"student_id": s1, "attended": 30.5}]}).status_code == 422
+    restored = client.put(f"/api/assessments/{att['id']}/scores", headers=F, json={"scores": [
+        {"student_id": s1, "attended": 30}]})
+    assert restored.status_code == 200
 
     gb = client.get(f"/api/courses/{cid}/gradebook", headers=F).json()
     st = {s["student_id"]: s for s in gb["students"]}

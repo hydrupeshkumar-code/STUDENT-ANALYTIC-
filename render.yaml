@@ -1,4 +1,4 @@
-# Render Blueprint — Student Assessment & Analytics Platform (SAAP)
+# Render Blueprint — Student Platform
 #
 # Deploy: Render dashboard → New → Blueprint → pick this repository → Apply.
 # Render asks for the values marked `sync: false` (first admin email/password) during setup.
