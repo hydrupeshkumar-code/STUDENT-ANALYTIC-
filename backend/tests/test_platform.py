@@ -1,4 +1,5 @@
 from app.models import HistoricalRecord
+from app import cli
 from app.services import prediction
 from tests.conftest import login
 
@@ -12,6 +13,27 @@ def _assessment(client, h, cid, **kw):
 
 def _open(client, h, aid):
     assert client.post(f"/api/assessments/{aid}/status", headers=h, json={"status": "in_progress"}).status_code == 200
+
+
+def test_demo_bootstrap_populates_portals_when_only_initial_admin_exists(client, db, monkeypatch):
+    db.add(cli.User(name="Initial admin", email="admin@saap.edu", role="admin",
+                    password_hash=cli.hash_password("InitialPassword123")))
+    db.commit()
+
+    monkeypatch.setenv("SEED_DEMO", "true")
+    monkeypatch.delenv("INITIAL_ADMIN_EMAIL", raising=False)
+    monkeypatch.delenv("INITIAL_ADMIN_PASSWORD", raising=False)
+
+    cli.bootstrap()
+
+    for email, password, role in (
+        ("admin@saap.edu", "Admin@123", "admin"),
+        ("neha@saap.edu", "Faculty@123", "faculty"),
+        ("student@saap.edu", "Student@123", "student"),
+    ):
+        response = client.post("/api/auth/login", json={"email": email, "password": password})
+        assert response.status_code == 200, response.text
+        assert response.json()["user"]["role"] == role
 
 
 # ------------------------------------------------------------------ auth & security

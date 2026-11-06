@@ -77,17 +77,26 @@ def _rubric(db, owner, title, desc, levels, criteria):
 def seed_demo():
     rng = random.Random(2026)
     with SessionLocal() as db:
-        # demo data may join an install that only has its first admin, but never real academic data
+        # Demo data may join an install that only has administrator accounts, but
+        # must never be added on top of academic data or existing non-admin users.
         if db.query(Course.id).first() or db.query(Program.id).first() or \
-                db.query(User.id).filter(User.email.like("%@saap.edu")).first():
-            sys.exit("Courses, programs or demo accounts already exist — demo data can only be loaded into a fresh install.")
+                db.query(User.id).filter(User.role != "admin").first():
+            sys.exit("Academic data or non-admin accounts already exist — demo data can only be loaded into an empty install.")
 
         def user(name, email, role, pw, dept=None):
             u = User(name=name, email=email, role=role, department=dept, password_hash=hash_password(pw))
             db.add(u)
             return u
 
-        admin = user("Exam Cell Administrator", "admin@saap.edu", "admin", "Admin@123")
+        admin = db.query(User).filter_by(email="admin@saap.edu").first()
+        if admin:
+            admin.name = "Exam Cell Administrator"
+            admin.role = "admin"
+            admin.password_hash = hash_password("Admin@123")
+            admin.is_active = True
+            admin.must_change_password = False
+        else:
+            admin = user("Exam Cell Administrator", "admin@saap.edu", "admin", "Admin@123")
         neha = user("T. Neha", "neha@saap.edu", "faculty", "Faculty@123", "Computer Science & Engineering")
         ravi = user("Dr. Ravi Shankar", "ravi@saap.edu", "faculty", "Faculty@123", "Computer Science & Engineering")
         anita = user("Prof. Anita Desai", "anita@saap.edu", "faculty", "Faculty@123", "Computer Science & Engineering")
@@ -299,7 +308,7 @@ def bootstrap():
 
     with SessionLocal() as db:
         fresh = (db.query(Course.id).first() is None and db.query(Program.id).first() is None
-                 and db.query(User.id).filter(User.email.like("%@saap.edu")).first() is None)
+                 and db.query(User.id).filter(User.role != "admin").first() is None)
         users = db.query(User.id).count()
     if fresh and os.getenv("SEED_DEMO", "").lower() in ("1", "true", "yes"):
         print("bootstrap: no courses yet, loading demo data (demo logins: admin@saap.edu / Admin@123)")
