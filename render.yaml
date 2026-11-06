@@ -38,9 +38,9 @@ services:
         sync: false                 # at least 8 characters with letters and numbers
       - key: INITIAL_ADMIN_NAME
         value: Exam Cell Administrator
-      # "true" loads the demo institution (3 courses, 40 students) into an EMPTY database — for demos only.
+      # Demo accounts are enabled for this public demo deployment. Set false before using real student data.
       - key: SEED_DEMO
-        value: "false"
+        value: "true"
 
 databases:
   - name: saap-db
