@@ -99,7 +99,7 @@ The repo includes a Render Blueprint, [`render.yaml`](render.yaml). It creates:
 
 To deploy:
 1. In Render, click **New → Blueprint**, connect this GitHub repository, and click **Apply**.
-2. When prompted, enter `INITIAL_ADMIN_EMAIL` and `INITIAL_ADMIN_PASSWORD` (at least 8 characters, letters and numbers). This admin is created on first start.
+2. Nothing needs to be entered. The Blueprint deploys with the demo accounts only (admin, faculty and student logins listed above). For a real deployment, add `INITIAL_ADMIN_EMAIL` and `INITIAL_ADMIN_PASSWORD` (at least 8 characters, letters and numbers) and set `SEED_DEMO=false`.
 3. The Blueprint sets `SEED_DEMO=true` so the demo admin, faculty and student accounts are available for a project review. Demo credentials are listed above. This is only for demonstrations; set `SEED_DEMO=false` before using real student data.
 
 On startup, demo data is added only when the database has no courses, programs or non-admin accounts. This also supports a database where Render created only the initial admin before demo seeding was enabled. In that case, `admin@saap.edu` is set to the demo password `Admin@123`. Do not enable demo seeding on a database containing real student data.
