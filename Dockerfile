@@ -20,11 +20,13 @@ RUN useradd --create-home --uid 10001 saap \
  && chmod +x /app/backend/start.sh
 USER saap
 EXPOSE 8000
-# Safe defaults; the host's environment variables (e.g. Render's DATABASE_URL) override these.
+# Defaults; the host's environment variables (e.g. Render's DATABASE_URL) override these.
+# SEED_DEMO=true: this deployment runs with the demo accounts. Set SEED_DEMO=false for real data.
 ENV PORT=8000 \
     ENVIRONMENT=production \
     DATABASE_URL=sqlite:////app/backend/data/saap.db \
-    TRUSTED_PROXY_HOPS=1
+    TRUSTED_PROXY_HOPS=1 \
+    SEED_DEMO=true
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s CMD python -c "import os,urllib.request,sys; sys.exit(0 if urllib.request.urlopen(f'http://127.0.0.1:{os.environ.get(\"PORT\",\"8000\")}/api/health').status==200 else 1)"
 # validate config -> migrate -> first-run bootstrap (admin / optional demo data) -> serve on $PORT
 CMD ["./start.sh"]
