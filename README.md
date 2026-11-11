@@ -58,6 +58,15 @@ Student Platform brings the **CP** (Continuous Process: quizzes, assignments, pr
 - **Overall at-risk model:** features are quiz %, assignment %, practical %, attendance % and overall CP % (CP-only, so predictions exist before the exam). Target is fail/pass. Both algorithms are cross-validated, the better one by F1 is selected, and hold-out metrics are stored at the flagging threshold (medium risk, p ≥ 0.35). With no trained model, a transparent rules-based fallback is used.
 - **Separate student-facing risk signals:** attendance risk uses the configured minimum-attendance requirement. Internal-assessment risk averages the available quiz, assignment and practical components against a 60% improvement target. The scores are labelled as risk indexes, not probabilities, and are accompanied by practical next steps.
 
+## Run with one command
+
+Requirements: Python 3.11+ and Node.js 20+.
+
+- **Windows:** double-click `run.bat`.
+- **macOS / Linux:** run `./run.sh` in a terminal.
+
+The script installs the Python and Node packages, builds the web app, sets up the database, loads the demo data on the first run and opens http://localhost:8000. The first run takes a few minutes; later runs start in seconds and keep your data. Stop it with Ctrl+C. Use `SEED_DEMO=false` to start without demo data, or `PORT=9000` to change the port.
+
 ## Run locally (development)
 
 Requirements: Python 3.12+, Node 20+.
